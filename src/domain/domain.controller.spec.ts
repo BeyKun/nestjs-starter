@@ -4,12 +4,15 @@ import { DomainService } from './domain.service';
 
 describe('DomainController', () => {
   let controller: DomainController;
-
+  const mockDomainService = {};
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DomainController],
       providers: [DomainService],
-    }).compile();
+    })
+      .overrideProvider(DomainService)
+      .useValue(mockDomainService)
+      .compile();
 
     controller = module.get<DomainController>(DomainController);
   });

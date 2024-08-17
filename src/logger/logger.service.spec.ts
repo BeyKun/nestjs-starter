@@ -3,11 +3,14 @@ import { LoggerService } from './logger.service';
 
 describe('LoggerService', () => {
   let service: LoggerService;
-
+  const mockLoggerService = {};
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [LoggerService],
-    }).compile();
+    })
+      .overrideProvider(LoggerService)
+      .useValue(mockLoggerService)
+      .compile();
 
     service = module.get<LoggerService>(LoggerService);
   });

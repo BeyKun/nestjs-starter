@@ -13,8 +13,8 @@ import {
 import { DomainService } from './domain.service';
 import { Prisma } from '@prisma/client';
 import { SkipThrottle } from '@nestjs/throttler';
-import { LoggerService } from 'src/logger/logger.service';
-import { JwtGurad } from 'src/auth/guards/jwt.guard';
+import { LoggerService } from '../logger/logger.service';
+import { JwtGurad } from '../auth/guards/jwt.guard';
 
 @SkipThrottle()
 @Controller('domain')

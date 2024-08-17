@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '../database/database.service';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
-import { HelperService } from 'src/helper/helper.service';
+import { HelperService } from '../helper/helper.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly databaseService: DatabaseService,
-    private readonly helper: HelperService
+    private readonly helper: HelperService,
   ) {}
 
   async login(req: AuthPayloadDto) {
@@ -28,10 +28,12 @@ export class AuthService {
         user_id: user.id,
         email: user.email,
       };
-      return {
+      const result = {
         ...payload,
         access_token: await this.jwtService.signAsync(payload),
       };
+
+      return this.helper.response(result, 200, 'Success');
     }
   }
 
@@ -44,14 +46,14 @@ export class AuthService {
       role: req.role,
     };
     await this.databaseService.user.create({
-      data: {...newUser, password: hashedPassword},
+      data: { ...newUser, password: hashedPassword },
     });
 
-    return newUser;
+    return this.helper.response(newUser, 200, 'Success');
   }
 
   async profile(req: Request) {
     const user = await this.helper.getUserFromToken(req);
-    return this.helper.response(user, 200, 'Success')
+    return this.helper.response(user, 200, 'Success');
   }
 }
