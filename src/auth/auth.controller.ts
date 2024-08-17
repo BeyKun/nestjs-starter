@@ -22,9 +22,9 @@ export class AuthController {
     return this.authService.register(req);
   }
 
-  @Get('status')
+  @Get('profile')
   @UseGuards(JwtGurad)
   status(@Req() req: Request) {
-    return req.user;
+    return this.authService.profile(req);
   }
 }

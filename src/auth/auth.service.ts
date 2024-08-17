@@ -3,12 +3,16 @@ import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
+import { HelperService } from 'src/helper/helper.service';
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly databaseService: DatabaseService,
+    private readonly helper: HelperService
   ) {}
 
   async login(req: AuthPayloadDto) {
@@ -21,13 +25,12 @@ export class AuthService {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload = {
-        name: user.name,
+        user_id: user.id,
         email: user.email,
-        role: user.role,
       };
       return {
         ...payload,
-        access_token: this.jwtService.sign(payload),
+        access_token: await this.jwtService.signAsync(payload),
       };
     }
   }
@@ -39,10 +42,16 @@ export class AuthService {
       name: req.name,
       email: req.email,
       role: req.role,
-      password: hashedPassword,
     };
-    return this.databaseService.user.create({
-      data: newUser,
+    await this.databaseService.user.create({
+      data: {...newUser, password: hashedPassword},
     });
+
+    return newUser;
+  }
+
+  async profile(req: Request) {
+    const user = await this.helper.getUserFromToken(req);
+    return this.helper.response(user, 200, 'Success')
   }
 }
