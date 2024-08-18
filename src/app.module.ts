@@ -9,12 +9,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { LoggerModule } from './logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { HelperModule } from './helper/helper.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    UsersModule,
-    DatabaseModule,
-    DomainModule,
+    ConfigModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -30,6 +29,9 @@ import { HelperModule } from './helper/helper.module';
     LoggerModule,
     AuthModule,
     HelperModule,
+    UsersModule,
+    DatabaseModule,
+    DomainModule,
   ],
   controllers: [AppController],
   providers: [
