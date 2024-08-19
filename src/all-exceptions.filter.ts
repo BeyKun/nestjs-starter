@@ -5,7 +5,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { LoggerService } from './logger/logger.service';
+import { LoggerService } from './utils/logger/logger.service';
 import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
 

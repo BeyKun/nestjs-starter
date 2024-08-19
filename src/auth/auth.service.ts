@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '../utils/database/database.service';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
-import { HelperService } from '../helper/helper.service';
+import { HelperService } from '../utils/helper/helper.service';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
         access_token: await this.jwtService.signAsync(payload),
       };
 
-      return this.helper.response(result, 200, 'Success');
+      return this.helper.response(result, 201, 'Success');
     }
   }
 
@@ -43,13 +43,12 @@ export class AuthService {
     const newUser = {
       name: req.name,
       email: req.email,
-      role: req.role,
     };
     await this.databaseService.user.create({
       data: { ...newUser, password: hashedPassword },
     });
 
-    return this.helper.response(newUser, 200, 'Success');
+    return this.helper.response(newUser, 201, 'Success');
   }
 
   async profile(req: Request) {
