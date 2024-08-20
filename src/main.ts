@@ -19,22 +19,23 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.enableCors();
   app.use(helmet());
-  app.use(cookieParser());
-  app.use(csurf({ cookie: { sameSite: true } }));
+  // app.use(cookieParser());
+  // app.use(csurf({ cookie: true }));
 
-  app.use((req: any, res: any, next: any) => {
-    const token = req.csrfToken();
-    res.cookie('XSRF-TOKEN', token);
-    res.locals.csrfToken = token;
+  // app.use((req: any, res: any, next: any) => {
+  //   const token = req.csrfToken();
+  //   res.cookie('XSRF-TOKEN', token);
+  //   res.locals.csrfToken = token;
 
-    next();
-  });
+  //   next();
+  // });
 
   const config = new DocumentBuilder()
     .setTitle('NestJst Starter')
     .setDescription('Lorem ipsum dolor set amet')
     .setVersion('1.0')
     .addTag('My API TAG')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

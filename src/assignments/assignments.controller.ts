@@ -12,7 +12,10 @@ import {
 import { JwtGurad } from '../auth/guards/jwt.guard';
 import { AssignmentsService } from './assignments.service';
 import { Prisma } from '@prisma/client';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Assignments')
+@ApiBearerAuth()
 @Controller('assignments')
 @UseGuards(JwtGurad)
 export class AssignmentsController {
@@ -24,6 +27,7 @@ export class AssignmentsController {
    * @param {string} [search] - Optional search query to filter assignments.
    * @return {Promise<any>} The list of assignments.
    */
+  @ApiParam({ name: 'search', required: false })
   @Get()
   async findAll(@Query('search') search?: string) {
     return await this.assignmentsService.findAll(search);

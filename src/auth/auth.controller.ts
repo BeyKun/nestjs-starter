@@ -6,7 +6,10 @@ import { Request } from 'express';
 import { JwtGurad } from './guards/jwt.guard';
 import { Prisma } from '@prisma/client';
 import { AuthPayloadDto } from './dto/auth.dto';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -31,7 +34,7 @@ export class AuthController {
    */
   @Post('register')
   @UseGuards(LocalGuard)
-  register(@Body() req: Prisma.UserCreateInput): Promise<any> {
+  register(@Body() req: CreateUserDto): Promise<any> {
     return this.authService.register(req);
   }
 
@@ -43,6 +46,7 @@ export class AuthController {
    */
   @Get('profile')
   @UseGuards(JwtGurad)
+  @ApiBearerAuth()
   profile(@Req() req: Request): Promise<any> {
     return this.authService.profile(req);
   }

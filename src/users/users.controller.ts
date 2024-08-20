@@ -7,14 +7,18 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtGurad } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('User')
+@ApiBearerAuth()
+@UseGuards(JwtGurad)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
