@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../utils/database/database.service';
 import { HelperService } from '../utils/helper/helper.service';
 import { Prisma } from '@prisma/client';
+import { ResponseDto } from '../utils/dto/response.dto';
 
 @Injectable()
 export class AssignmentsService {
@@ -10,7 +11,13 @@ export class AssignmentsService {
     private readonly helper: HelperService,
   ) {}
 
-  async create(req: Prisma.AssignmentCreateInput) {
+  /**
+   * Creates a new assignment in the database.
+   *
+   * @param {Prisma.AssignmentCreateInput} req - The input data for creating a new assignment.
+   * @return {Assignment} The created assignment with a 201 status code.
+   */
+  async create(req: Prisma.AssignmentCreateInput): Promise<ResponseDto> {
     const assignment = await this.databaseService.assignment.create({
       data: req,
     });
@@ -18,7 +25,13 @@ export class AssignmentsService {
     return this.helper.response(assignment, 201);
   }
 
-  async findAll(search?: string) {
+  /**
+   * Retrieves a list of assignments from the database.
+   *
+   * @param {string} [searchQuery] - Optional search query to filter assignments by user or domain name.
+   * @return {Assignment[]} The list of assignments with a 200 status code.
+   */
+  async findAll(searchQuery?: string): Promise<ResponseDto> {
     const select = {
       id: true,
       user_id: true,
@@ -35,15 +48,16 @@ export class AssignmentsService {
         },
       },
     };
-    let where = {};
 
-    if (search) {
+    let where: Prisma.AssignmentWhereInput = {};
+
+    if (searchQuery) {
       where = {
         OR: [
           {
             user: {
               name: {
-                contains: search,
+                contains: searchQuery,
                 mode: 'insensitive',
               },
             },
@@ -51,7 +65,7 @@ export class AssignmentsService {
           {
             domain: {
               name: {
-                contains: search,
+                contains: searchQuery,
                 mode: 'insensitive',
               },
             },
@@ -59,11 +73,69 @@ export class AssignmentsService {
         ],
       };
     }
+
     const assignments = await this.databaseService.assignment.findMany({
-      select: select,
-      where: where,
+      select,
+      where,
     });
 
     return this.helper.response(assignments, 200);
+  }
+
+  /**
+   * Retrieves a specific assignment from the database.
+   *
+   * @param {string} id - The ID of the assignment to retrieve.
+   * @return {Assignment} The retrieved assignment with a 200 status code.
+   */
+  async findOne(id: string): Promise<ResponseDto> {
+    const assignment = await this.databaseService.assignment.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!assignment) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.helper.response(assignment, 200);
+  }
+
+  /**
+   * Updates an assignment in the database.
+   *
+   * @param {string} id - The ID of the assignment to update.
+   * @param {Prisma.AssignmentUpdateInput} req - The input data for updating the assignment.
+   * @return {Assignment} The updated assignment with a 200 status code.
+   */
+  async update(
+    id: string,
+    req: Prisma.AssignmentUpdateInput,
+  ): Promise<ResponseDto> {
+    const assignment = await this.databaseService.assignment.update({
+      where: {
+        id: id,
+      },
+      data: req,
+    });
+
+    return this.helper.response(assignment, 200);
+  }
+
+  /**
+   * Deletes an assignment from the database.
+   *
+   * @param {string} id - The ID of the assignment to delete.
+   * @return {ResponseDto} A response DTO indicating the deletion was successful with a status code of 200.
+   */
+  async delete(id: string): Promise<ResponseDto> {
+    await this.databaseService.assignment.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return this.helper.response(null, 200);
   }
 }

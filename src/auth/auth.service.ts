@@ -6,6 +6,7 @@ import { DatabaseService } from '../utils/database/database.service';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
 import { HelperService } from '../utils/helper/helper.service';
+import { ResponseDto } from '../utils/dto/response.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,13 @@ export class AuthService {
     private readonly helper: HelperService,
   ) {}
 
-  async login(req: AuthPayloadDto) {
+  /**
+   * Authenticates a user based on the provided credentials.
+   *
+   * @param {AuthPayloadDto} req - The authentication request payload containing the username and password.
+   * @return {Promise<ResponseDto>} A promise that resolves with a response containing the access token if the authentication is successful.
+   */
+  async login(req: AuthPayloadDto): Promise<ResponseDto> {
     const { username, password } = req;
     const user = await this.databaseService.user.findUnique({
       where: {
@@ -37,7 +44,13 @@ export class AuthService {
     }
   }
 
-  async register(req: Prisma.UserCreateInput) {
+  /**
+   * Registers a new user with the provided information.
+   *
+   * @param {Prisma.UserCreateInput} req - The user registration request payload containing the user's name, email, and password.
+   * @return {Promise<ResponseDto>} A promise that resolves with a response containing the newly created user data.
+   */
+  async register(req: Prisma.UserCreateInput): Promise<ResponseDto> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.password, salt);
     const newUser = {
@@ -51,7 +64,13 @@ export class AuthService {
     return this.helper.response(newUser, 201, 'Success');
   }
 
-  async profile(req: Request) {
+  /**
+   * Retrieves a user's profile information based on the provided request.
+   *
+   * @param {Request} req - The incoming request object containing the user token.
+   * @return {Promise<ResponseDto>} A promise that resolves with a response containing the user's profile data.
+   */
+  async profile(req: Request): Promise<ResponseDto> {
     const user = await this.helper.getUserFromToken(req);
     return this.helper.response(user, 200, 'Success');
   }

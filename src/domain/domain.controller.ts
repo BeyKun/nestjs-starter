@@ -23,33 +23,65 @@ export class DomainController {
   constructor(private readonly domainService: DomainService) {}
   private readonly logger = new LoggerService(DomainController.name);
 
+  /**
+   * Creates a new domain in the database.
+   *
+   * @param {Prisma.DomainCreateInput} createDomainDto - The data to be used for creating the new domain.
+   * @return {Promise<any>} A promise that resolves to the newly created domain with a 201 status code.
+   */
   @Post()
-  create(@Body() createDomainDto: Prisma.DomainCreateInput) {
+  create(@Body() createDomainDto: Prisma.DomainCreateInput): Promise<any> {
     return this.domainService.create(createDomainDto);
   }
 
+  /**
+   * Retrieves a list of all domains.
+   *
+   * @param {string} ip - The IP address of the requesting client.
+   * @param {string} [search] - Optional search query to filter results.
+   * @return {Promise<any>} A promise that resolves to a list of domains.
+   */
   @SkipThrottle({ default: false })
   @Get()
-  findAll(@Ip() ip: string, @Query('search') search?: string) {
+  findAll(@Ip() ip: string, @Query('search') search?: string): Promise<any> {
     this.logger.log(`Request for All Domain\t${ip}`, DomainController.name);
     return this.domainService.findAll(search);
   }
 
+  /**
+   * Finds a domain by its ID.
+   *
+   * @param {string} id - The ID of the domain to find.
+   * @return {Promise<any>} A promise that resolves to the found domain.
+   */
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<any> {
     return this.domainService.findOne(id);
   }
 
+  /**
+   * Updates a domain in the database.
+   *
+   * @param {string} id - The ID of the domain to update.
+   * @param {Prisma.DomainUpdateInput} updateDomainDto - The data to be used for updating the domain.
+   * @return {Promise<any>} A promise that resolves to the updated domain.
+   */
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateDomainDto: Prisma.DomainUpdateInput,
-  ) {
+  ): Promise<any> {
     return this.domainService.update(id, updateDomainDto);
   }
 
+  /**
+   * Removes a domain from the database.
+   *
+   * @param {string} id - The ID of the domain to remove.
+   * @return {Promise<any>} A promise that resolves to the result of the removal operation.
+   */
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<any> {
     return this.domainService.remove(id);
   }
 }

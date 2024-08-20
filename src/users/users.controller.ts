@@ -3,54 +3,74 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
+@ApiTags('User')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * Get all users
+   * @param {string} search - search keyword
+   * @returns {Promise<User[]>}
+   */
+  @ApiParam({ name: 'search', required: false })
   @Get()
-  findAll(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
-    return this.usersService.findAll(role);
+  async findAll(@Query('search') search?: string): Promise<any> {
+    return this.usersService.findAll(search);
   }
 
+  /**
+   * Get a user by id
+   * @param {number} id - user id
+   * @returns {Promise<User>}
+   */
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = this.usersService.findOne(id);
-
-    if (!user) throw new NotFoundException('User Not Found');
-
-    return user;
+  async findOne(@Param('id') id: string): Promise<any> {
+    return this.usersService.findOne(id);
   }
 
+  /**
+   * Create a new user
+   * @param {Prisma.UserCreateInput} req - user data
+   * @returns {Promise<User>}
+   */
   @Post()
-  create(
-    @Body(ValidationPipe)
-    createUserDto: CreateUserDto,
-  ) {
-    return this.usersService.create(createUserDto);
+  async create(@Body(ValidationPipe) req: CreateUserDto): Promise<any> {
+    return this.usersService.create(req);
   }
 
+  /**
+   * Update a user
+   * @param {number} id - user id
+   * @param {Prisma.UserUpdateInput} req - user data
+   * @returns {Promise<User>}
+   */
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(ValidationPipe)
-    userUpdateDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(id, userUpdateDto);
+  async update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) req: UpdateUserDto,
+  ): Promise<any> {
+    return this.usersService.update(id.toString(), req);
   }
 
+  /**
+   * Delete a user
+   * @param {number} id - user id
+   * @returns {Promise<void>}
+   */
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(@Param('id') id: string): Promise<any> {
     return this.usersService.delete(id);
   }
 }

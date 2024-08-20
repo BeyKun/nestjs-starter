@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { DatabaseService } from '../database/database.service';
+import { ResponseDto } from '../dto/response.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class HelperService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  /**
+   * Retrieves a user from the database based on the provided token.
+   *
+   * @param {Request} req - The incoming request object containing the user token.
+   * @return {Promise<User>} The user data retrieved from the database.
+   */
   async getUserFromToken(req: Request) {
     const payload = JSON.parse(JSON.stringify(req.user));
     const user = await this.databaseService.user.findUnique({
@@ -22,7 +30,30 @@ export class HelperService {
     return user;
   }
 
-  response(data: any, code: number = 200, message: string = 'Success') {
-    return { data: data, message: message, code: code };
+  /**
+   * Returns a standardized response object with the provided data, status code, and message.
+   *
+   * @param {any} data - The data to be included in the response.
+   * @param {number} [code=200] - The HTTP status code of the response.
+   * @param {string} [message='Success'] - A message describing the response.
+   * @return {ResponseDto} A response object containing the data, message, and code.
+   */
+  response(
+    data: any,
+    code: number = 200,
+    message: string = 'Success',
+  ): ResponseDto {
+    return { data: data, message: message, statusCode: code };
+  }
+
+  /**
+   * Hash password from any string
+   *
+   * @param {string} password - Password to be hashed
+   * @return {Promise<string>} - Hashed password
+   */
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    return await bcrypt.hash(password, salt);
   }
 }

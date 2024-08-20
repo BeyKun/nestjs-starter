@@ -1,74 +1,127 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { DatabaseService } from '../utils/database/database.service';
+import { HelperService } from '../utils/helper/helper.service';
+import { ResponseDto } from '../utils/dto/response.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      name: 'Bayu',
-      email: 'bayu@mail.com',
-      role: 'ADMIN',
-    },
-    {
-      id: 2,
-      name: 'Rasukma',
-      email: 'Rasukma@gmail.com',
-      role: 'INTERN',
-    },
-    {
-      id: 3,
-      name: 'Raga',
-      email: 'raga@mail.com',
-      role: 'ENGINEER',
-    },
-  ];
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly helperService: HelperService,
+  ) {}
 
-  findAll(role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
-    if (role) {
-      const rolesArray = this.users.filter((user) => user.role === role);
-      if (rolesArray.length === 0)
-        throw new NotFoundException('User Role Not Found');
-
-      return rolesArray;
+  /**
+   * Get all users
+   * @param {string} [search] - Optional search query to filter users by name
+   * @returns {Promise<ResponseDto>} Array of users
+   */
+  async findAll(search?: string): Promise<ResponseDto> {
+    let users = [];
+    if (search) {
+      users = await this.databaseService.user.findMany({
+        where: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      });
+    } else {
+      users = await this.databaseService.user.findMany();
     }
 
-    return this.users;
+    return this.helperService.response(users, 200);
   }
 
-  findOne(id: number) {
-    const user = this.users.find((user) => user.id === id);
-    return user;
-  }
-
-  create(createUserDto: CreateUserDto) {
-    const usersByHighestId = [...this.users].sort((a, b) => b.id - a.id);
-    const newUser = {
-      id: usersByHighestId[0].id + 1,
-      ...createUserDto,
-    };
-
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  update(id: number, updatedUserDto: UpdateUserDto) {
-    this.users = this.users.map((user) => {
-      if (user.id === id) {
-        return { ...user, ...updatedUserDto };
-      }
-      return user;
+  /**
+   * Get one user by id
+   * @param {number} id User id
+   * @returns {Promise<ResponseDto>} User
+   */
+  async findOne(id: string): Promise<ResponseDto> {
+    const user = await this.databaseService.user.findUnique({
+      where: { id },
     });
 
-    return this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.helperService.response(user, 200);
   }
 
-  delete(id: number) {
-    const removeUser = this.findOne(id);
+  /**
+   * Create new user
+   * @param {Prisma.UserCreateInput} createUserDto User data
+   * @returns {Promise<ResponseDto>} New user
+   */
+  async create(createUserDto: Prisma.UserCreateInput): Promise<ResponseDto> {
+    const foundUser = await this.databaseService.user.findFirst({
+      where: { email: createUserDto.email },
+    });
 
-    this.users = this.users.filter((user) => user.id !== id);
+    if (foundUser) {
+      throw new UnprocessableEntityException(
+        'Email already exists. Please use a different email.',
+      );
+    }
 
-    return removeUser;
+    const passwordHash = await this.helperService.hashPassword(
+      createUserDto.password,
+    );
+    const user = await this.databaseService.user.create({
+      data: {
+        ...createUserDto,
+        password: passwordHash,
+      },
+    });
+
+    return this.helperService.response(user, 201);
+  }
+
+  /**
+   * Update one user
+   * @param {number} id User id
+   * @param {Prisma.UserUpdateInput} updateUserDto User data
+   * @returns {Promise<ResponseDto>} Updated user
+   */
+  async update(
+    id: string,
+    updateUserDto: Prisma.UserUpdateInput,
+  ): Promise<ResponseDto> {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const updatedUser = await this.databaseService.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = updatedUser;
+    return this.helperService.response(result, 200);
+  }
+
+  /**
+   * Delete one user
+   * @param {string} id User id
+   * @returns {Promise<ResponseDto>} Deleted user
+   */
+  async delete(id: string): Promise<ResponseDto> {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.databaseService.user.delete({
+      where: { id },
+    });
+
+    return this.helperService.response(user, 200);
   }
 }
