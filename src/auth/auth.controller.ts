@@ -13,8 +13,8 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalGuard)
-  login(@Body() req: AuthPayloadDto) {
-    return this.authService.login(req);
+  async login(@Body() req: AuthPayloadDto) {
+    return await this.authService.login(req);
   }
 
   @Post('register')

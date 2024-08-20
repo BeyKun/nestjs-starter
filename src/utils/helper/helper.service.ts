@@ -16,7 +16,6 @@ export class HelperService {
         id: true,
         name: true,
         email: true,
-        role: true,
       },
     });
 

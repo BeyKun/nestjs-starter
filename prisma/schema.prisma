@@ -20,10 +20,11 @@ model User {
   id          String @id @default(uuid())
   name        String
   email       String @unique
-  role        Role
+  password    String
+  assignment  Assignment[]
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  password    String
+  deleted_at  DateTime?
 }
 
 model Domain {
@@ -31,8 +32,22 @@ model Domain {
   name        String
   description String
   parent_id   String?
+  assignment Assignment[]
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  deleted_at  DateTime?
+}
+
+model Assignment {
+  id          String @id @default(uuid())
+  domain      Domain @relation(fields: [domain_id], references: [id])
+  domain_id   String
+  user        User @relation(fields: [user_id], references: [id])
+  user_id     String
+  role        Role
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  deleted_at  DateTime?  
 }
 
 enum Role {
