@@ -66,11 +66,12 @@ export class AuthService {
       name: req.name,
       email: req.email,
     };
-    await this.databaseService.user.create({
+    const user = await this.databaseService.user.create({
       data: { ...newUser, password: hashedPassword },
     });
-
-    return this.helper.response(newUser, 201, 'Success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return this.helper.response(result, 201, 'Success');
   }
 
   /**

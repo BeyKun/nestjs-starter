@@ -14,7 +14,9 @@ import { AssignmentsModule } from './assignments/assignments.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ThrottlerModule.forRoot([
       {
         name: 'short',

@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { authStub, loginStub } from '../src/auth/test/stubs/auth.stub';
 import { AuthModule } from '../src/auth/auth.module';
+import { UsersModule } from '../src/users/users.module';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -10,7 +11,7 @@ describe('AuthController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule],
+      imports: [AuthModule, UsersModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -20,7 +21,7 @@ describe('AuthController (e2e)', () => {
   it('/auth/login (POST)', async () => {
     const { statusCode, body } = await request(app.getHttpServer())
       .post('/auth/login')
-      .send(loginStub);
+      .send({ ...loginStub, password: process.env.TEST_PASSWORD });
 
     access_token = body.data.access_token;
     expect(statusCode).toBe(201);
@@ -28,7 +29,6 @@ describe('AuthController (e2e)', () => {
   });
 
   it('/auth/profile (GET)', async () => {
-    console.log(access_token);
     const { statusCode, body } = await request(app.getHttpServer())
       .get('/auth/profile')
       .set('Authorization', `Bearer ${access_token}`)
@@ -49,5 +49,11 @@ describe('AuthController (e2e)', () => {
 
     expect(statusCode).toBe(201);
     expect(body.data).toBeDefined();
+
+    //delete after test
+    await request(app.getHttpServer())
+      .delete('/users/' + body.data.id)
+      .set('Authorization', `Bearer ${access_token}`)
+      .expect(200);
   });
 });

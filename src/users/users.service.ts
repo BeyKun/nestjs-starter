@@ -129,6 +129,6 @@ export class UsersService {
       where: { id },
     });
 
-    return this.helperService.response(user, 200);
+    return this.helperService.response(null, 200);
   }
 }

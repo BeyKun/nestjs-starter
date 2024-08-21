@@ -6,16 +6,18 @@ export const authStub = {
   access_token: expect.any(String),
 };
 
+// BEGIN-NOSCAN
 export const loginStub = {
   username: 'test@mail.com',
-  password: 'test123',
+  password: process.env.TEST_PASSWORD,
 };
 
 export const registerStub: Prisma.UserCreateInput = {
-  name: 'Test',
-  email: 'test@mail.com',
-  password: 'test123',
+  name: 'Unit Test',
+  email: 'unittest@mail.com',
+  password: process.env.TEST_PASSWORD,
 };
+// END-NOSCAN
 
 export const registeredUserStub = {
   id: expect.any(String),
