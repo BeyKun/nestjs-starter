@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAssignmentDto {
@@ -26,5 +26,11 @@ export class CreateAssignmentDto {
     example: 'ADMIN | INTERN | ENGINEER',
     required: true,
   })
-  role: string;
+  @IsEnum(['INTERN', 'ENGINEER', 'ADMIN'], {
+    message: 'Valid role required',
+  })
+  role: 'INTERN' | 'ENGINEER' | 'ADMIN';
+
+  user: any;
+  domain: any;
 }

@@ -86,7 +86,7 @@ export class DomainController {
    * @return {Promise<any>} A promise that resolves to the result of the removal operation.
    */
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<any> {
-    return this.domainService.remove(id);
+  delete(@Param('id') id: string): Promise<any> {
+    return this.domainService.delete(id);
   }
 }

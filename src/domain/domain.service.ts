@@ -102,7 +102,7 @@ export class DomainService {
    * @param {string} id - The ID of the domain to remove.
    * @return {Promise<ResponseDto>} A promise that resolves to a response DTO with a status code of 200 and a success message.
    */
-  async remove(id: string): Promise<ResponseDto> {
+  async delete(id: string): Promise<ResponseDto> {
     await this.databaseService.domain.delete({
       where: {
         id,

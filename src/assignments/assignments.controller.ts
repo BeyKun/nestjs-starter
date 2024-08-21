@@ -13,6 +13,7 @@ import { JwtGurad } from '../auth/guards/jwt.guard';
 import { AssignmentsService } from './assignments.service';
 import { Prisma } from '@prisma/client';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { CreateAssignmentDto } from './dto/create-assignments.dto';
 
 @ApiTags('Assignments')
 @ApiBearerAuth()
@@ -40,7 +41,7 @@ export class AssignmentsController {
    * @return {Promise<any>} The created assignment.
    */
   @Post()
-  async create(@Body() req: Prisma.AssignmentCreateInput) {
+  async create(@Body() req: CreateAssignmentDto) {
     return await this.assignmentsService.create(req);
   }
 

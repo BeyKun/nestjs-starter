@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
@@ -51,6 +51,15 @@ export class AuthService {
    * @return {Promise<ResponseDto>} A promise that resolves with a response containing the newly created user data.
    */
   async register(req: Prisma.UserCreateInput): Promise<ResponseDto> {
+    const foundUser = await this.databaseService.user.findFirst({
+      where: { email: req.email },
+    });
+
+    if (foundUser) {
+      throw new UnprocessableEntityException(
+        'Email already exists. Please use a different email.',
+      );
+    }
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.password, salt);
     const newUser = {

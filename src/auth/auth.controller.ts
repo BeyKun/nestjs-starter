@@ -4,10 +4,9 @@ import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { Request } from 'express';
 import { JwtGurad } from './guards/jwt.guard';
-import { Prisma } from '@prisma/client';
 import { AuthPayloadDto } from './dto/auth.dto';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,11 +28,10 @@ export class AuthController {
   /**
    * Registers a new user with the provided information.
    *
-   * @param {Prisma.UserCreateInput} req - The user registration request payload containing the user's name, email, and password.
+   * @param {CreateUserDto} req - The user registration request payload containing the user's name, email, and password.
    * @return {Promise<any>} A promise that resolves with the registration result.
    */
   @Post('register')
-  @UseGuards(LocalGuard)
   register(@Body() req: CreateUserDto): Promise<any> {
     return this.authService.register(req);
   }

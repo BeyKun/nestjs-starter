@@ -98,9 +98,16 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    const pwd =
+      typeof updateUserDto.password === 'object'
+        ? updateUserDto.password.set
+        : updateUserDto.password;
+
+    const passwordHash = await this.helperService.hashPassword(pwd);
     const updatedUser = await this.databaseService.user.update({
       where: { id },
-      data: updateUserDto,
+      data: { ...updateUserDto, password: passwordHash },
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import * as cookieParser from 'cookie-parser';
-import * as csurf from 'csurf';
+// import * as cookieParser from 'cookie-parser';
+// import * as csurf from 'csurf';
 // import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
