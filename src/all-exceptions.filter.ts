@@ -11,6 +11,7 @@ import {
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
+import { NotFoundError } from 'rxjs';
 
 type MyResponseObj = {
   statusCode: number;
@@ -38,10 +39,16 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     if (exception instanceof HttpException) {
       myResponseObj.statusCode = exception.getStatus();
       myResponseObj.response = exception.getResponse();
+    } else if (exception instanceof NotFoundError) {
+      myResponseObj.statusCode = 404;
+      myResponseObj.response = exception.message;
     } else if (exception instanceof PrismaClientValidationError) {
       myResponseObj.statusCode = 422;
       myResponseObj.response = exception.message.replaceAll(/\n/g, '');
     } else if (exception instanceof PrismaClientKnownRequestError) {
+      if(exception.code === 'P2025') {
+        myResponseObj.statusCode = 404;
+      }
       myResponseObj.response = exception.message.replaceAll(/\n/g, '');
     } else {
       myResponseObj.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;

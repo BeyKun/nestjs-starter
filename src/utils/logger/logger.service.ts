@@ -27,11 +27,11 @@ export class LoggerService extends ConsoleLogger {
     }).format(new Date())}\t${entry}\n`;
 
     try {
-      if (!fs.existsSync(path.join(__dirname, '..', 'logs'))) {
-        await fsPromises.mkdir(path.join(__dirname, '..', 'logs'));
+      if (!fs.existsSync(path.join(__dirname, '../../..', 'logs'))) {
+        await fsPromises.mkdir(path.join(__dirname, '../../..', 'logs'));
       }
       await fsPromises.appendFile(
-        path.join(__dirname, '..', 'logs', 'log.txt'),
+        path.join(__dirname, '../../..', 'logs', 'log.txt'),
         formattedEntry,
       );
     } catch (e) {

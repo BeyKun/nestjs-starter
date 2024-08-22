@@ -5,12 +5,13 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './utils/database/database.module';
 import { DomainModule } from './domain/domain.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { HelperModule } from './utils/helper/helper.module';
 import { ConfigModule } from '@nestjs/config';
 import { AssignmentsModule } from './assignments/assignments.module';
+import { AllExceptionsFilter } from './all-exceptions.filter';
 
 @Module({
   imports: [
@@ -43,6 +44,10 @@ import { AssignmentsModule } from './assignments/assignments.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

@@ -62,15 +62,15 @@ export class DomainService {
    * @return {Promise<ResponseDto>} A promise that resolves to a response DTO containing the found domain and a status code of 200.
    */
   async findOne(id: string): Promise<ResponseDto> {
-    const domain = await this.databaseService.domain.findUnique({
+    const domain = await this.databaseService.domain.findUniqueOrThrow({
       where: {
         id,
       },
     });
 
-    if (!domain) {
-      throw new NotFoundException('Not Found');
-    }
+    // if (!domain) {
+    //   throw new NotFoundException('Not Found');
+    // }
 
     return this.helper.response(domain, 200);
   }

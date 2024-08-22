@@ -4,6 +4,8 @@ import * as request from 'supertest';
 import { DomainModule } from '../src/domain/domain.module';
 import { loginStub } from '../src/auth/test/stubs/auth.stub';
 import { AuthModule } from '../src/auth/auth.module';
+import { AllExceptionsFilter } from '../src/all-exceptions.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 describe('DomainController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +19,8 @@ describe('DomainController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
     await app.init();
 
     const { body } = await request(app.getHttpServer())
