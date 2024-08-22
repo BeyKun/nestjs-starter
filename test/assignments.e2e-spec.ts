@@ -15,7 +15,7 @@ describe('AssignmentController (e2e)', () => {
   let domain_id: string;
   let search: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AssignmentsModule, AuthModule, DomainModule, UsersModule],
     }).compile();
@@ -91,7 +91,7 @@ describe('AssignmentController (e2e)', () => {
           domain_id: domain_id,
           role: 'TEST',
         })
-        .expect(422);
+        .expect(400);
     });
   });
 
@@ -148,14 +148,14 @@ describe('AssignmentController (e2e)', () => {
       expect(body.data.role).toBe('ENGINEER');
     });
 
-    it('should return error validation', async () => {
+    it('should return error validation role', async () => {
       await request(app.getHttpServer())
         .patch('/assignments/' + assignment_id)
         .set('Authorization', `Bearer ${token}`)
         .send({
           role: 'TEST',
         })
-        .expect(422);
+        .expect(400);
     });
   });
 

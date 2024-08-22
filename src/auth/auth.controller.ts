@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { Request } from 'express';
@@ -20,7 +28,7 @@ export class AuthController {
    */
   @Post('login')
   @UseGuards(LocalGuard)
-  async login(@Body() req: AuthPayloadDto): Promise<any> {
+  async login(@Body(ValidationPipe) req: AuthPayloadDto): Promise<any> {
     return await this.authService.login(req);
   }
 
@@ -31,7 +39,7 @@ export class AuthController {
    * @return {Promise<any>} A promise that resolves with the registration result.
    */
   @Post('register')
-  register(@Body() req: CreateUserDto): Promise<any> {
+  register(@Body(ValidationPipe) req: CreateUserDto): Promise<any> {
     return this.authService.register(req);
   }
 

@@ -9,8 +9,9 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication;
   let user_id: string;
   let token: string;
+  let search: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UsersModule, AuthModule],
     }).compile();
@@ -26,58 +27,117 @@ describe('UsersController (e2e)', () => {
     token = body.data.access_token;
   });
 
-  it('/users (POST)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .post('/users')
-      .set('Authorization', `Bearer ${token}`)
-      .send(registerStub)
-      .expect(201);
+  describe('create', () => {
+    it('should return created user', async () => {
+      const { body } = await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send(registerStub)
+        .expect(201);
 
-    user_id = body.data.id;
-    expect(body.data.id).toBeDefined();
-    expect(body.data.name).toBe('Unit Test');
-    expect(body.data.email).toBe('unittest@mail.com');
+      user_id = body.data.id;
+      search = body.data.name;
+      expect(body.data.id).toBeDefined();
+      expect(body.data.name).toBe('Unit Test');
+      expect(body.data.email).toBe('unittest@mail.com');
+    });
+
+    it('should return validation error', async () => {
+      await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'test', email: 'unittest@mail.com' })
+        .expect(400);
+    });
+
+    it('should return validation error email already exist', async () => {
+      await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send(registerStub)
+        .expect(422);
+    });
   });
 
-  it('/users (GET)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .get('/users')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
+  describe('findAll', () => {
+    it('should return all users', async () => {
+      const { body } = await request(app.getHttpServer())
+        .get('/users')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
 
-    expect(body.data).toBeInstanceOf(Array);
-    expect(body.data).not.toHaveLength(0);
+      expect(body.data).toBeInstanceOf(Array);
+      expect(body.data).not.toHaveLength(0);
+    });
+
+    it('should return at least 1 user', async () => {
+      const { body } = await request(app.getHttpServer())
+        .get('/users?search=' + search)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(body.data).toBeInstanceOf(Array);
+      expect(body.data).not.toHaveLength(0);
+    });
   });
 
-  it('/users/:id (GET)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .get('/users/' + user_id)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
+  describe('findOne', () => {
+    it('should return a user', async () => {
+      const { body } = await request(app.getHttpServer())
+        .get('/users/' + user_id)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
 
-    expect(body.data.id).toBeDefined();
-    expect(body.data.name).toBe('Unit Test');
-    expect(body.data.email).toBe('unittest@mail.com');
+      expect(body.data.id).toBeDefined();
+      expect(body.data.name).toBe('Unit Test');
+      expect(body.data.email).toBe('unittest@mail.com');
+    });
+
+    it('should return not found', async () => {
+      await request(app.getHttpServer())
+        .get('/users/test')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(404);
+    });
   });
 
-  it('/users/:id (PATCH)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .patch('/users/' + user_id)
-      .send(registerStub)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
+  describe('update', () => {
+    it('should return updated user', async () => {
+      const { body } = await request(app.getHttpServer())
+        .patch('/users/' + user_id)
+        .send(registerStub)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
 
-    expect(body.data.id).toBeDefined();
-    expect(body.data.name).toBe('Unit Test');
-    expect(body.data.email).toBe('unittest@mail.com');
+      expect(body.data.id).toBeDefined();
+      expect(body.data.name).toBe('Unit Test');
+      expect(body.data.email).toBe('unittest@mail.com');
+    });
+
+    it('should return not found', async () => {
+      await request(app.getHttpServer())
+        .patch('/users/test')
+        .send(registerStub)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(404);
+    });
   });
 
-  it('/users/:id (DELETE)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .delete('/users/' + user_id)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
+  describe('delete', () => {
+    it('should return deleted user', async () => {
+      const { body } = await request(app.getHttpServer())
+        .delete('/users/' + user_id)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
 
-    expect(body.data).toBeNull();
+      expect(body.data).toBeNull();
+    });
+
+    it('should return not found', async () => {
+      await request(app.getHttpServer())
+        .delete('/users/test')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(404);
+    });
   });
 });

@@ -94,15 +94,14 @@ export class UsersService {
     id: string,
     updateUserDto: Prisma.UserUpdateInput,
   ): Promise<ResponseDto> {
-    const user = await this.findOne(id);
+    const user = await this.databaseService.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const pwd =
-      typeof updateUserDto.password === 'object'
-        ? updateUserDto.password.set
-        : updateUserDto.password;
+    const pwd = JSON.parse(JSON.stringify(updateUserDto.password));
 
     const passwordHash = await this.helperService.hashPassword(pwd);
     const updatedUser = await this.databaseService.user.update({
@@ -121,7 +120,9 @@ export class UsersService {
    * @returns {Promise<ResponseDto>} Deleted user
    */
   async delete(id: string): Promise<ResponseDto> {
-    const user = await this.findOne(id);
+    const user = await this.databaseService.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }

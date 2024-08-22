@@ -8,12 +8,13 @@ import {
   Post,
   Query,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { JwtGurad } from '../auth/guards/jwt.guard';
 import { AssignmentsService } from './assignments.service';
-import { Prisma } from '@prisma/client';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateAssignmentDto } from './dto/create-assignments.dto';
+import { UpdateAssignmentDto } from './dto/update-assignments.dto';
 
 @ApiTags('Assignments')
 @ApiBearerAuth()
@@ -37,11 +38,11 @@ export class AssignmentsController {
   /**
    * Creates a new assignment.
    *
-   * @param {Prisma.AssignmentCreateInput} req - The input data for creating a new assignment.
+   * @param {CreateAssignmentDto} req - The input data for creating a new assignment.
    * @return {Promise<any>} The created assignment.
    */
   @Post()
-  async create(@Body() req: CreateAssignmentDto) {
+  async create(@Body(ValidationPipe) req: CreateAssignmentDto) {
     return await this.assignmentsService.create(req);
   }
 
@@ -60,13 +61,13 @@ export class AssignmentsController {
    * Updates an assignment.
    *
    * @param {string} id - The ID of the assignment to update.
-   * @param {Prisma.AssignmentUpdateInput} req - The input data for updating the assignment.
+   * @param {UpdateAssignmentDto} req - The input data for updating the assignment.
    * @return {Promise<any>} The updated assignment.
    */
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() req: Prisma.AssignmentUpdateInput,
+    @Body(ValidationPipe) req: UpdateAssignmentDto,
   ) {
     return await this.assignmentsService.update(id, req);
   }

@@ -43,13 +43,6 @@ export class AssignmentsService {
       throw new UnprocessableEntityException('Domain not found');
     }
 
-    const role = ['ADMIN', 'INTERN', 'ENGINEER'];
-    if (req.role && !role.includes(payload.role)) {
-      throw new UnprocessableEntityException(
-        `Invalid role: ${payload.role.toString()}. Valid values are: ${role.join(', ')}`,
-      );
-    }
-
     const assignment = await this.databaseService.assignment.create({
       data: req,
     });
@@ -145,19 +138,11 @@ export class AssignmentsService {
     id: string,
     req: Prisma.AssignmentUpdateInput,
   ): Promise<ResponseDto> {
-    const payload = JSON.parse(JSON.stringify(req));
-    const role = ['ADMIN', 'INTERN', 'ENGINEER'];
-    if (req.role && !role.includes(payload.role)) {
-      throw new UnprocessableEntityException(
-        `Invalid role: ${payload.role.toString()}. Valid values are: ${role.join(', ')}`,
-      );
-    }
-
     const assignment = await this.databaseService.assignment.update({
       where: {
         id: id,
       },
-      data: req,
+      data: { role: req.role },
     });
 
     return this.helper.response(assignment, 200);

@@ -9,6 +9,7 @@ import {
   Query,
   Ip,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DomainService } from './domain.service';
 import { SkipThrottle } from '@nestjs/throttler';
@@ -30,11 +31,11 @@ export class DomainController {
   /**
    * Creates a new domain in the database.
    *
-   * @param {Prisma.DomainCreateInput} createDomainDto - The data to be used for creating the new domain.
+   * @param {CreateDomainDto} createDomainDto - The data to be used for creating the new domain.
    * @return {Promise<any>} A promise that resolves to the newly created domain with a 201 status code.
    */
   @Post()
-  create(@Body() createDomainDto: CreateDomainDto): Promise<any> {
+  create(@Body(ValidationPipe) createDomainDto: CreateDomainDto): Promise<any> {
     return this.domainService.create(createDomainDto);
   }
 
@@ -74,7 +75,7 @@ export class DomainController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateDomainDto: UpdateDomainDto,
+    @Body(ValidationPipe) updateDomainDto: UpdateDomainDto,
   ): Promise<any> {
     return this.domainService.update(id, updateDomainDto);
   }
