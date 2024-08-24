@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { DatabaseService } from '../database/database.service';
 import { ResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
+import { TrashDto } from '../dto/trash.dto';
 
 @Injectable()
 export class HelperService {
@@ -55,5 +56,20 @@ export class HelperService {
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
+  }
+
+  /**
+   * Moves data to the trash by deleting the original data and creating a new entry in the trash.
+   *
+   * @param {TrashDto} data - The data to be moved to the trash.
+   * @return {Promise<any>} The result of the trash creation operation.
+   */
+  async trash(data: TrashDto) {
+    if (data.module && data.data) {
+      await this.databaseService[data.module].delete({
+        where: { id: data.data.id },
+      });
+    }
+    return await this.databaseService.trash.create({ data: data });
   }
 }

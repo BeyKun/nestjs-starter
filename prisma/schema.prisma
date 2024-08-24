@@ -21,9 +21,10 @@ model User {
   name        String
   email       String @unique
   password    String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   Assignment  Assignment[]
+  Trash       Trash[]
 }
 
 model Domain {
@@ -84,7 +85,9 @@ model Trash {
   id        String @id @default(uuid())
   module    String
   data      Json
+  userId    String
   createdAt DateTime @default(now())
+  User      User @relation(fields: [userId], references: [id])
 }
 
 enum Action {
