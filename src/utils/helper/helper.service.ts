@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { DatabaseService } from '../database/database.service';
 import { ResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
-import { TrashDto } from '../dto/trash.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class HelperService {
@@ -64,10 +64,11 @@ export class HelperService {
    * @param {TrashDto} data - The data to be moved to the trash.
    * @return {Promise<any>} The result of the trash creation operation.
    */
-  async trash(data: TrashDto) {
+  async trash(data: Prisma.TrashCreateInput) {
     if (data.module && data.data) {
+      const payload = JSON.parse(JSON.stringify(data));
       await this.databaseService[data.module].delete({
-        where: { id: data.data.id },
+        where: { id: payload.data.id },
       });
     }
     return await this.databaseService.trash.create({ data: data });
