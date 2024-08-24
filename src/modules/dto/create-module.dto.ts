@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateDomainDto {
+export class CreateModuleDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
   @ApiProperty({
-    example: 'Main Domain',
+    example: 'Nama Module',
     required: true,
   })
   name: string;
@@ -22,8 +22,8 @@ export class CreateDomainDto {
   @IsString()
   @IsOptional()
   @ApiProperty({
-    example: '4dba425a-e8b4-4154-ba6c-cc931c247b86',
+    example: 'NAMA_MODULE',
     required: false,
   })
-  parentId: string;
+  constant: string;
 }

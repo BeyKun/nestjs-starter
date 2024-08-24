@@ -12,6 +12,9 @@ import { HelperModule } from './utils/helper/helper.module';
 import { ConfigModule } from '@nestjs/config';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { AllExceptionsFilter } from './all-exceptions.filter';
+import { ModulesModule } from './modules/modules.module';
+import { RolesModule } from './roles/roles.module';
+import { RoleSettingsModule } from './role-settings/role-settings.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { AllExceptionsFilter } from './all-exceptions.filter';
     DatabaseModule,
     DomainModule,
     AssignmentsModule,
+    ModulesModule,
+    RolesModule,
+    RoleSettingsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -42,11 +42,12 @@ describe('AssignmentsController', () => {
   describe('create', () => {
     it('should return the created assignment', async () => {
       const createData: CreateAssignmentDto = {
-        user_id: '1',
-        domain_id: '1',
-        role: 'ADMIN',
-        user: {},
-        domain: {},
+        userId: '1',
+        domainId: '1',
+        roleId: '1',
+        User: {},
+        Domain: {},
+        Role: {},
       };
       const result = await controller.create(createData);
       expect(result).toBeNull();
@@ -65,9 +66,12 @@ describe('AssignmentsController', () => {
   describe('update', () => {
     it('should return an assignment', async () => {
       const updateData: UpdateAssignmentDto = {
-        user: {},
-        domain: {},
-        role: 'ADMIN',
+        userId: '1',
+        domainId: '1',
+        roleId: '1',
+        User: {},
+        Domain: {},
+        Role: {},
       };
       const result = await controller.update('1', updateData);
       expect(result).toEqual({ id: '1' });

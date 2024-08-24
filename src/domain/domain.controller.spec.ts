@@ -36,7 +36,7 @@ describe('DomainController', () => {
       const createData: CreateDomainDto = {
         name: 'test',
         description: 'test',
-        parent_id: null,
+        parentId: null,
       };
       const result = await controller.create(createData);
       expect(result).toEqual({ id: '1' });
@@ -65,7 +65,7 @@ describe('DomainController', () => {
       const updateData: UpdateDomainDto = {
         name: 'test',
         description: 'test',
-        parent_id: null,
+        parentId: null,
       };
       const result = await controller.update('1', updateData);
       expect(result).toEqual({ id: '1' });

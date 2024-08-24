@@ -47,14 +47,14 @@ export class AssignmentsService {
   async findAll(searchQuery?: string): Promise<ResponseDto> {
     const select = {
       id: true,
-      user_id: true,
-      domain_id: true,
-      user: {
+      userId: true,
+      domainId: true,
+      User: {
         select: {
           name: true,
         },
       },
-      domain: {
+      Domain: {
         select: {
           name: true,
           description: true,
@@ -68,7 +68,7 @@ export class AssignmentsService {
       where = {
         OR: [
           {
-            user: {
+            User: {
               name: {
                 contains: searchQuery,
                 mode: 'insensitive',
@@ -76,7 +76,7 @@ export class AssignmentsService {
             },
           },
           {
-            domain: {
+            Domain: {
               name: {
                 contains: searchQuery,
                 mode: 'insensitive',
@@ -122,6 +122,7 @@ export class AssignmentsService {
     id: string,
     req: Prisma.AssignmentUpdateInput,
   ): Promise<ResponseDto> {
+    const payload = JSON.parse(JSON.stringify(req));
     await this.databaseService.assignment.findUniqueOrThrow({
       where: {
         id: id,
@@ -132,7 +133,7 @@ export class AssignmentsService {
       where: {
         id: id,
       },
-      data: { role: req.role },
+      data: { roleId: payload.roleId },
     });
 
     return this.helper.response(assignment, 200);

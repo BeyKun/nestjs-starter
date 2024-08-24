@@ -23,7 +23,6 @@ export const registeredUserStub = {
   id: expect.any(String),
   name: 'Test',
   email: 'test@mail.com',
-  role: 'ADMIN',
   created_at: expect.any(Date),
   updated_at: expect.any(Date),
 };

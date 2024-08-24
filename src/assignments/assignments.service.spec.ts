@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AssignmentsService } from './assignments.service';
-import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../utils/database/database.service';
 import { HelperService } from '../utils/helper/helper.service';
+import { UpdateAssignmentDto } from './dto/update-assignments.dto';
+import { CreateAssignmentDto } from './dto/create-assignments.dto';
 
 const mockAssignmentsService = {
   findAll: jest.fn().mockResolvedValue([]),
@@ -40,10 +41,13 @@ describe('AssignmentsService', () => {
 
   describe('createAssignment', () => {
     it('should return the created assignment', async () => {
-      const createData: Prisma.AssignmentCreateInput = {
-        user: {},
-        domain: {},
-        role: 'ADMIN',
+      const createData: CreateAssignmentDto = {
+        userId: '1',
+        domainId: '1',
+        roleId: '1',
+        User: {},
+        Domain: {},
+        Role: {},
       };
       const result = await service.create(createData);
       expect(result).toEqual({ id: '1' });
@@ -61,10 +65,13 @@ describe('AssignmentsService', () => {
 
   describe('updateAssignment', () => {
     it('should return the updated assignment', async () => {
-      const updateData: Prisma.AssignmentUpdateInput = {
-        user: {},
-        domain: {},
-        role: 'ADMIN',
+      const updateData: UpdateAssignmentDto = {
+        userId: '1',
+        domainId: '1',
+        roleId: '1',
+        User: {},
+        Domain: {},
+        Role: {},
       };
       const result = await service.update('1', updateData);
       expect(result).toBeDefined();

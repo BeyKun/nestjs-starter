@@ -21,37 +21,75 @@ model User {
   name        String
   email       String @unique
   password    String
-  assignment  Assignment[]
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  deleted_at  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Assignment  Assignment[]
 }
 
 model Domain {
   id          String  @id @default(uuid())
   name        String
   description String
-  parent_id   String?
-  assignment Assignment[]
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  deleted_at  DateTime?
+  parentId   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Assignment  Assignment[]
+  RoleSetting RoleSetting[]
 }
 
 model Assignment {
   id          String @id @default(uuid())
-  domain      Domain @relation(fields: [domain_id], references: [id])
-  domain_id   String
-  user        User @relation(fields: [user_id], references: [id])
-  user_id     String
-  role        Role
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  deleted_at  DateTime?  
+  domainId    String
+  userId      String
+  roleId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Domain      Domain @relation(fields: [domainId], references: [id])
+  User        User @relation(fields: [userId], references: [id])
+  Role        Role @relation(fields: [roleId], references: [id])
 }
 
-enum Role {
-  INTERN
-  ENGINEER
-  ADMIN
+model Role {
+  id            String @id @default(uuid())
+  name          String
+  description   String
+  Assignment    Assignment[]
+  RoleSetting   RoleSetting[]
+}
+
+model RoleSetting {
+  id          String @id @default(uuid())
+  roleId      String
+  domainId    String
+  moduleId    String
+  action      Action
+  isAllowed   Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Role        Role @relation(fields: [roleId], references: [id])
+  Domain      Domain @relation(fields: [domainId], references: [id])
+  Module      Module @relation(fields: [moduleId], references: [id])
+}
+
+model Module {
+  id            String @id @default(uuid())
+  name          String
+  description   String
+  constant      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  RoleSetting   RoleSetting[]
+}
+model Trash {
+  id        String @id @default(uuid())
+  module    String
+  data      Json
+  createdAt DateTime @default(now())
+}
+
+enum Action {
+  CREATE
+  READ
+  UPDATE
+  DELETE
 }
