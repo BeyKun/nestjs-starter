@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../utils/database/database.service';
@@ -68,10 +68,6 @@ export class DomainService {
       },
     });
 
-    // if (!domain) {
-    //   throw new NotFoundException('Not Found');
-    // }
-
     return this.helper.response(domain, 200);
   }
 
@@ -86,15 +82,11 @@ export class DomainService {
     id: string,
     updateDomainDto: Prisma.DomainUpdateInput,
   ): Promise<ResponseDto> {
-    const domainExist = await this.databaseService.domain.findUnique({
+    await this.databaseService.domain.findUniqueOrThrow({
       where: {
         id,
       },
     });
-
-    if (!domainExist) {
-      throw new NotFoundException('Not Found');
-    }
 
     const domain = await this.databaseService.domain.update({
       where: {
@@ -113,15 +105,11 @@ export class DomainService {
    * @return {Promise<ResponseDto>} A promise that resolves to a response DTO with a status code of 200 and a success message.
    */
   async delete(id: string): Promise<ResponseDto> {
-    const domainExist = await this.databaseService.domain.findUnique({
+    await this.databaseService.domain.findUniqueOrThrow({
       where: {
         id,
       },
     });
-
-    if (!domainExist) {
-      throw new NotFoundException('Not Found');
-    }
 
     await this.databaseService.domain.delete({
       where: {

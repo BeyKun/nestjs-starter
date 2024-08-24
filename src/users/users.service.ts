@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { DatabaseService } from '../utils/database/database.service';
 import { HelperService } from '../utils/helper/helper.service';
 import { ResponseDto } from '../utils/dto/response.dto';
@@ -44,13 +40,9 @@ export class UsersService {
    * @returns {Promise<ResponseDto>} User
    */
   async findOne(id: string): Promise<ResponseDto> {
-    const user = await this.databaseService.user.findUnique({
+    const user = await this.databaseService.user.findUniqueOrThrow({
       where: { id },
     });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
 
     return this.helperService.response(user, 200);
   }
@@ -94,12 +86,9 @@ export class UsersService {
     id: string,
     updateUserDto: Prisma.UserUpdateInput,
   ): Promise<ResponseDto> {
-    const user = await this.databaseService.user.findUnique({
+    await this.databaseService.user.findUniqueOrThrow({
       where: { id },
     });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
 
     const pwd = JSON.parse(JSON.stringify(updateUserDto.password));
 
@@ -120,12 +109,10 @@ export class UsersService {
    * @returns {Promise<ResponseDto>} Deleted user
    */
   async delete(id: string): Promise<ResponseDto> {
-    const user = await this.databaseService.user.findUnique({
+    await this.databaseService.user.findUniqueOrThrow({
       where: { id },
     });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+
     await this.databaseService.user.delete({
       where: { id },
     });

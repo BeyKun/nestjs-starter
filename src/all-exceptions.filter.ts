@@ -46,7 +46,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       myResponseObj.statusCode = 422;
       myResponseObj.response = exception.message.replaceAll(/\n/g, '');
     } else if (exception instanceof PrismaClientKnownRequestError) {
-      if(exception.code === 'P2025') {
+      if (exception.code === 'P2025') {
         myResponseObj.statusCode = 404;
       }
       myResponseObj.response = exception.message.replaceAll(/\n/g, '');

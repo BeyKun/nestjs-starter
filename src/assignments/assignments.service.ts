@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../utils/database/database.service';
 import { HelperService } from '../utils/helper/helper.service';
 import { Prisma } from '@prisma/client';
@@ -23,25 +19,17 @@ export class AssignmentsService {
    */
   async create(req: Prisma.AssignmentCreateInput): Promise<ResponseDto> {
     const payload = JSON.parse(JSON.stringify(req));
-    const user = await this.databaseService.user.findUnique({
+    await this.databaseService.user.findUniqueOrThrow({
       where: {
         id: payload.user_id,
       },
     });
 
-    if (!user) {
-      throw new UnprocessableEntityException('User not found');
-    }
-
-    const domain = await this.databaseService.domain.findUnique({
+    await this.databaseService.domain.findUniqueOrThrow({
       where: {
         id: payload.domain_id,
       },
     });
-
-    if (!domain) {
-      throw new UnprocessableEntityException('Domain not found');
-    }
 
     const assignment = await this.databaseService.assignment.create({
       data: req,
@@ -114,15 +102,11 @@ export class AssignmentsService {
    * @return {Assignment} The retrieved assignment with a 200 status code.
    */
   async findOne(id: string): Promise<ResponseDto> {
-    const assignment = await this.databaseService.assignment.findUnique({
+    const assignment = await this.databaseService.assignment.findUniqueOrThrow({
       where: {
         id: id,
       },
     });
-
-    if (!assignment) {
-      throw new NotFoundException('Not Found');
-    }
 
     return this.helper.response(assignment, 200);
   }
@@ -138,6 +122,12 @@ export class AssignmentsService {
     id: string,
     req: Prisma.AssignmentUpdateInput,
   ): Promise<ResponseDto> {
+    await this.databaseService.assignment.findUniqueOrThrow({
+      where: {
+        id: id,
+      },
+    });
+
     const assignment = await this.databaseService.assignment.update({
       where: {
         id: id,
@@ -155,15 +145,11 @@ export class AssignmentsService {
    * @return {ResponseDto} A response DTO indicating the deletion was successful with a status code of 200.
    */
   async delete(id: string): Promise<ResponseDto> {
-    const assignment = await this.databaseService.assignment.findUnique({
+    await this.databaseService.assignment.findUniqueOrThrow({
       where: {
         id: id,
       },
     });
-
-    if (!assignment) {
-      throw new NotFoundException('Not Found');
-    }
 
     await this.databaseService.assignment.delete({
       where: {

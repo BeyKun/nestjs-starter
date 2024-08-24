@@ -4,6 +4,8 @@ import { AuthModule } from '../src/auth/auth.module';
 import { loginStub, registerStub } from '../src/auth/test/stubs/auth.stub';
 import { UsersModule } from '../src/users/users.module';
 import * as request from 'supertest';
+import { HttpAdapterHost } from '@nestjs/core';
+import { AllExceptionsFilter } from '../src/all-exceptions.filter';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +19,8 @@ describe('UsersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
     await app.init();
 
     const { body } = await request(app.getHttpServer())

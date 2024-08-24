@@ -6,6 +6,8 @@ import { AuthModule } from '../src/auth/auth.module';
 import { AssignmentsModule } from '../src/assignments/assignments.module';
 import { DomainModule } from '../src/domain/domain.module';
 import { UsersModule } from '../src/users/users.module';
+import { HttpAdapterHost } from '@nestjs/core';
+import { AllExceptionsFilter } from '../src/all-exceptions.filter';
 
 describe('AssignmentController (e2e)', () => {
   let app: INestApplication;
@@ -21,6 +23,8 @@ describe('AssignmentController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
     await app.init();
     const { body } = await request(app.getHttpServer())
       .post('/auth/login')
@@ -67,7 +71,7 @@ describe('AssignmentController (e2e)', () => {
           domain_id: 'test',
           role: 'ADMIN',
         })
-        .expect(422);
+        .expect(404);
     });
 
     it('it should return and error validation domain not found', async () => {
@@ -79,7 +83,7 @@ describe('AssignmentController (e2e)', () => {
           domain_id: 'test',
           role: 'ADMIN',
         })
-        .expect(422);
+        .expect(404);
     });
 
     it('it should return and error validation role', async () => {
