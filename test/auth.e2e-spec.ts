@@ -11,6 +11,7 @@ describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let access_token: string;
   let user_id: string;
+  let random_token: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,6 +21,8 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+
+    random_token = Math.random().toString(36).slice(-8);
     await app.init();
   });
 
@@ -59,7 +62,7 @@ describe('AuthController (e2e)', () => {
     it('should return unauthenticated', async () => {
       await request(app.getHttpServer())
         .get('/auth/profile')
-        .set('Authorization', `Bearer wrong.token`)
+        .set('Authorization', `Bearer ${random_token}`)
         .expect(401);
     });
   });
