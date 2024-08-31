@@ -21,13 +21,19 @@ export class AssignmentsService {
     const payload = JSON.parse(JSON.stringify(req));
     await this.databaseService.user.findUniqueOrThrow({
       where: {
-        id: payload.user_id,
+        id: payload.userId,
       },
     });
 
     await this.databaseService.domain.findUniqueOrThrow({
       where: {
-        id: payload.domain_id,
+        id: payload.domainId,
+      },
+    });
+
+    await this.databaseService.role.findUniqueOrThrow({
+      where: {
+        id: payload.roleId,
       },
     });
 
@@ -126,6 +132,12 @@ export class AssignmentsService {
     await this.databaseService.assignment.findUniqueOrThrow({
       where: {
         id: id,
+      },
+    });
+
+    await this.databaseService.role.findUniqueOrThrow({
+      where: {
+        id: payload.roleId,
       },
     });
 

@@ -1,21 +1,21 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { DomainModule } from '../src/domain/domain.module';
+import { ModulesModule } from '../src/modules/modules.module';
 import { loginStub } from '../src/auth/test/stubs/auth.stub';
 import { AuthModule } from '../src/auth/auth.module';
 import { AllExceptionsFilter } from '../src/all-exceptions.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 
-describe('DomainController (e2e)', () => {
+describe('ModulesController (e2e)', () => {
   let app: INestApplication;
-  let domain_id: string;
+  let modules_id: string;
   let search: string;
   let token: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [DomainModule, AuthModule],
+      imports: [ModulesModule, AuthModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -32,37 +32,27 @@ describe('DomainController (e2e)', () => {
   });
 
   describe('create', () => {
-    it('should return create domain', async () => {
+    it('should return create modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .post('/domain')
+        .post('/modules')
         .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'Test',
           description: 'Test',
-          parentId: null,
+          constant: 'TEST',
         })
         .expect(201);
 
-      domain_id = body.data.id;
+      modules_id = body.data.id;
       search = body.data.name;
       expect(body).toBeDefined();
-    });
-
-    it('should return error validation', async () => {
-      await request(app.getHttpServer())
-        .post('/domain')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          name: 'Test',
-        })
-        .expect(400);
     });
   });
 
   describe('findAll', () => {
-    it('should return all domains', async () => {
+    it('should return all modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .get('/domain')
+        .get('/modules')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -70,9 +60,9 @@ describe('DomainController (e2e)', () => {
       expect(body.data).not.toHaveLength(0);
     });
 
-    it('should return at least 1 domain', async () => {
+    it('should return at least 1 modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .get('/domain?search=' + search)
+        .get('/modules?search=' + search)
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -82,9 +72,9 @@ describe('DomainController (e2e)', () => {
   });
 
   describe('findOne', () => {
-    it('should return a domain', async () => {
+    it('should return a modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .get('/domain/' + domain_id)
+        .get('/modules/' + modules_id)
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -93,20 +83,21 @@ describe('DomainController (e2e)', () => {
 
     it('should return not found', async () => {
       await request(app.getHttpServer())
-        .get('/domain/test')
+        .get('/modules/test')
         .set('Authorization', `Bearer ${token}`)
         .expect(404);
     });
   });
 
   describe('update', () => {
-    it('should return updated domain', async () => {
+    it('should return updated modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .patch('/domain/' + domain_id)
+        .patch('/modules/' + modules_id)
         .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'Test2',
           description: 'Test2',
+          constant: 'TEST2',
         })
         .expect(200);
 
@@ -115,7 +106,7 @@ describe('DomainController (e2e)', () => {
 
     it('should return not found', async () => {
       await request(app.getHttpServer())
-        .patch('/domain/test')
+        .patch('/modules/test')
         .set('Authorization', `Bearer ${token}`)
         .send({
           name: 'Test2',
@@ -125,9 +116,9 @@ describe('DomainController (e2e)', () => {
   });
 
   describe('delete', () => {
-    it('should return deleted domain', async () => {
+    it('should return deleted modules', async () => {
       const { body } = await request(app.getHttpServer())
-        .delete('/domain/' + domain_id)
+        .delete('/modules/' + modules_id)
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -136,7 +127,7 @@ describe('DomainController (e2e)', () => {
 
     it('should return not found', async () => {
       await request(app.getHttpServer())
-        .delete('/domain/test')
+        .delete('/modules/test')
         .set('Authorization', `Bearer ${token}`)
         .expect(404);
     });

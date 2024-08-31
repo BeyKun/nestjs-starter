@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from 'src/utils/database/database.service';
-import { ResponseDto } from 'src/utils/dto/response.dto';
-import { HelperService } from 'src/utils/helper/helper.service';
+import { DatabaseService } from '../utils/database/database.service';
+import { ResponseDto } from '../utils/dto/response.dto';
+import { HelperService } from '../utils/helper/helper.service';
 
 @Injectable()
 export class RoleSettingsService {
@@ -24,6 +24,23 @@ export class RoleSettingsService {
    * @return {Promise<ResponseDto>} The created role setting response.
    */
   async create(req: Prisma.RoleSettingCreateInput): Promise<ResponseDto> {
+    const payload = JSON.parse(JSON.stringify(req));
+    await this.databaseService.module.findUniqueOrThrow({
+      where: {
+        id: payload.moduleId,
+      },
+    });
+    await this.databaseService.role.findUniqueOrThrow({
+      where: {
+        id: payload.roleId,
+      },
+    });
+    await this.databaseService.domain.findUniqueOrThrow({
+      where: {
+        id: payload.domainId,
+      },
+    });
+
     const settings = await this.databaseService.roleSetting.create({
       data: req,
     });
@@ -83,7 +100,9 @@ export class RoleSettingsService {
    */
   async findOne(id: string): Promise<ResponseDto> {
     const settings = await this.databaseService.roleSetting.findUniqueOrThrow({
-      where: { id },
+      where: {
+        id: id,
+      },
     });
     return this.helper.response(settings, 200);
   }
@@ -100,11 +119,15 @@ export class RoleSettingsService {
     req: Prisma.RoleSettingUpdateInput,
   ): Promise<ResponseDto> {
     await this.databaseService.roleSetting.findUniqueOrThrow({
-      where: { id },
+      where: {
+        id: id,
+      },
     });
 
     const settings = await this.databaseService.roleSetting.update({
-      where: { id },
+      where: {
+        id: id,
+      },
       data: req,
     });
     return this.helper.response(settings, 200);
@@ -118,12 +141,16 @@ export class RoleSettingsService {
    */
   async delete(id: string): Promise<ResponseDto> {
     await this.databaseService.roleSetting.findUniqueOrThrow({
-      where: { id },
+      where: {
+        id: id,
+      },
     });
 
-    const settings = await this.databaseService.roleSetting.delete({
-      where: { id },
+    await this.databaseService.roleSetting.delete({
+      where: {
+        id: id,
+      },
     });
-    return this.helper.response(settings, 200);
+    return this.helper.response(null, 200);
   }
 }

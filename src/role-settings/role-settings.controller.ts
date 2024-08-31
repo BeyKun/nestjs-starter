@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -11,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { RoleSettingsService } from './role-settings.service';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
-import { JwtGurad } from 'src/auth/guards/jwt.guard';
+import { JwtGurad } from '../auth/guards/jwt.guard';
 import { CreateRoleSettingsDto } from './dto/create-role-settings.dto';
-import { ResponseDto } from 'src/utils/dto/response.dto';
+import { ResponseDto } from '../utils/dto/response.dto';
 import { UpdateRoleSettingsDto } from './dto/update-role-settings.dto';
 
 @ApiTags('Role Settings')
@@ -55,7 +56,7 @@ export class RoleSettingsController {
    * @return {Promise<ResponseDto>} The retrieved role setting response.
    */
   @Get(':id')
-  async findOne(@Query('id') id: string): Promise<ResponseDto> {
+  async findOne(@Param('id') id: string): Promise<ResponseDto> {
     return await this.roleSettingsService.findOne(id);
   }
 
@@ -68,7 +69,7 @@ export class RoleSettingsController {
    */
   @Patch(':id')
   async update(
-    @Query('id') id: string,
+    @Param('id') id: string,
     @Body(ValidationPipe) req: UpdateRoleSettingsDto,
   ): Promise<ResponseDto> {
     return await this.roleSettingsService.update(id, req);
@@ -81,7 +82,7 @@ export class RoleSettingsController {
    * @return {Promise<ResponseDto>} The deletion response.
    */
   @Delete(':id')
-  async delete(@Query('id') id: string): Promise<ResponseDto> {
+  async delete(@Param('id') id: string): Promise<ResponseDto> {
     return await this.roleSettingsService.delete(id);
   }
 }

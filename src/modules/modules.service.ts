@@ -88,9 +88,9 @@ export class ModulesService {
     await this.databaseService.module.findUniqueOrThrow({
       where: { id },
     });
-    const deletedModule = await this.databaseService.module.delete({
+    await this.databaseService.module.delete({
       where: { id },
     });
-    return this.helper.response(deletedModule, 200);
+    return this.helper.response(null, 200);
   }
 }

@@ -32,7 +32,7 @@ describe('DomainService', () => {
       const createData: CreateDomainDto = {
         name: 'test',
         description: 'test',
-        parent_id: null,
+        parentId: null,
       };
       const result = await service.create(createData);
       expect(result).toEqual({ id: '1' });
@@ -61,7 +61,7 @@ describe('DomainService', () => {
       const updateData: UpdateDomainDto = {
         name: 'test2',
         description: 'test2',
-        parent_id: null,
+        parentId: null,
       };
       const result = await service.update('1', updateData);
       expect(result).toEqual({ id: '1' });
