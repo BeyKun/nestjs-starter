@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Request } from 'express';
 import { DatabaseService } from '../database/database.service';
 import { ResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
-import { Prisma } from '@prisma/client';
+import { globalConstant } from '../constant';
 
 @Injectable()
 export class HelperService {
@@ -59,18 +59,16 @@ export class HelperService {
   }
 
   /**
-   * Moves data to the trash by deleting the original data and creating a new entry in the trash.
+   * Identifies the module based on the given module constant.
    *
-   * @param {TrashDto} data - The data to be moved to the trash.
-   * @return {Promise<any>} The result of the trash creation operation.
+   * @param {string} moduleConstant - The module constant to identify the module.
+   * @return {string} The identified module constant.
+   * @throws {UnprocessableEntityException} If the module constant is not found.
    */
-  async trash(data: Prisma.TrashCreateInput) {
-    if (data.module && data.data) {
-      const payload = JSON.parse(JSON.stringify(data));
-      await this.databaseService[data.module].delete({
-        where: { id: payload.data.id },
-      });
-    }
-    return await this.databaseService.trash.create({ data: data });
+  identifyModule(moduleConstant: string): string {
+    const constant = globalConstant[moduleConstant];
+    if (constant) return constant;
+
+    throw new UnprocessableEntityException('Module not found');
   }
 }

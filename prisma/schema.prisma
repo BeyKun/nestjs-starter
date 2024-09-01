@@ -80,14 +80,17 @@ model Module {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   RoleSetting   RoleSetting[]
+  Trash         Trash[]
 }
 model Trash {
-  id        String @id @default(uuid())
-  module    String
-  data      Json
-  userId    String
-  createdAt DateTime @default(now())
-  User      User @relation(fields: [userId], references: [id])
+  id            String @id @default(uuid())
+  moduleId      String
+  moduleDataId  String
+  data          String
+  userId        String
+  createdAt     DateTime @default(now())
+  User          User @relation(fields: [userId], references: [id])
+  Module        Module @relation(fields: [moduleId], references: [id])
 }
 
 enum Action {

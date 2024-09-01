@@ -15,6 +15,7 @@ import { AllExceptionsFilter } from './all-exceptions.filter';
 import { ModulesModule } from './modules/modules.module';
 import { RolesModule } from './roles/roles.module';
 import { RoleSettingsModule } from './role-settings/role-settings.module';
+import { TrashModule } from './trash/trash.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { RoleSettingsModule } from './role-settings/role-settings.module';
     ModulesModule,
     RolesModule,
     RoleSettingsModule,
+    TrashModule,
   ],
   controllers: [AppController],
   providers: [
