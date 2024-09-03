@@ -12,7 +12,8 @@ export class UsersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly helperService: HelperService,
-    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   /**

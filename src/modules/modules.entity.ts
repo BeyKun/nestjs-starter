@@ -1,4 +1,4 @@
-import { AssignmentEntity } from 'src/assignments/assignments.entity';
+import { RoleSettingEntity } from 'src/role-settings/role-settings.entity';
 import { TrashEntity } from 'src/trash/trash.entity';
 import {
   BaseEntity,
@@ -8,19 +8,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('users')
-export class UserEntity extends BaseEntity {
+@Entity('modules')
+export class ModulesEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   name: string;
 
-  @Column({ unique: true })
-  email: string;
+  @Column()
+  description: string;
 
   @Column()
-  password: string;
+  constant: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -32,9 +32,9 @@ export class UserEntity extends BaseEntity {
   })
   updatedAt: Date;
 
-  @OneToMany(() => AssignmentEntity, (assignment) => assignment.user)
-  assignments: AssignmentEntity[];
+  @OneToMany(() => RoleSettingEntity, (roleSetting) => roleSetting.module)
+  roleSettings: RoleSettingEntity[];
 
-  @OneToMany(() => TrashEntity, (trash) => trash.user)
+  @OneToMany(() => TrashEntity, (trash) => trash.module)
   trash: TrashEntity[];
 }
