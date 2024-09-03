@@ -16,6 +16,8 @@ import { ModulesModule } from './modules/modules.module';
 import { RolesModule } from './roles/roles.module';
 import { RoleSettingsModule } from './role-settings/role-settings.module';
 import { TrashModule } from './trash/trash.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from './config/config.service';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { TrashModule } from './trash/trash.module';
         limit: 100,
       },
     ]),
+    TypeOrmModule.forRoot(typeOrmConfig),
     LoggerModule,
     AuthModule,
     HelperModule,

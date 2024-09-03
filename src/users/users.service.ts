@@ -3,12 +3,16 @@ import { DatabaseService } from '../utils/database/database.service';
 import { HelperService } from '../utils/helper/helper.service';
 import { ResponseDto } from '../utils/dto/response.dto';
 import { Prisma } from '@prisma/client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './users.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly helperService: HelperService,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   /**
@@ -66,6 +70,13 @@ export class UsersService {
     const passwordHash = await this.helperService.hashPassword(
       createUserDto.password,
     );
+
+    await this.userRepository.save({
+      ...createUserDto,
+      email: 'generated@example.com',
+      password: passwordHash,
+    });
+
     const user = await this.databaseService.user.create({
       data: {
         ...createUserDto,
