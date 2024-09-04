@@ -2,18 +2,21 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '../utils/database/database.service';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
 import { HelperService } from '../utils/helper/helper.service';
 import { ResponseDto } from '../utils/dto/response.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/users/users.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly databaseService: DatabaseService,
     private readonly helper: HelperService,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   /**
@@ -24,10 +27,9 @@ export class AuthService {
    */
   async login(req: AuthPayloadDto): Promise<ResponseDto> {
     const { username, password } = req;
-    const user = await this.databaseService.user.findUnique({
-      where: {
-        email: username,
-      },
+
+    const user = await this.userRepository.findOne({
+      where: { email: username },
     });
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -51,7 +53,7 @@ export class AuthService {
    * @return {Promise<ResponseDto>} A promise that resolves with a response containing the newly created user data.
    */
   async register(req: Prisma.UserCreateInput): Promise<ResponseDto> {
-    const foundUser = await this.databaseService.user.findFirst({
+    const foundUser = await this.userRepository.findOne({
       where: { email: req.email },
     });
 
@@ -66,8 +68,10 @@ export class AuthService {
       name: req.name,
       email: req.email,
     };
-    const user = await this.databaseService.user.create({
-      data: { ...newUser, password: hashedPassword },
+
+    const user = await this.userRepository.save({
+      ...newUser,
+      password: hashedPassword,
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;

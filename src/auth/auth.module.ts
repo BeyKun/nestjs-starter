@@ -7,6 +7,8 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { DatabaseModule } from '../utils/database/database.module';
 import { HelperModule } from '../utils/helper/helper.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from '../users/users.entity';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { HelperModule } from '../utils/helper/helper.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    TypeOrmModule.forFeature([UserEntity]),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGurad } from '../auth/guards/jwt.guard';
@@ -28,9 +28,10 @@ export class UsersController {
    * @param {string} search - search keyword
    * @returns {Promise<User[]>}
    */
-  @ApiParam({ name: 'search', required: false })
+  @ApiQuery({ name: 'search', required: false })
   @Get()
   async findAll(@Query('search') search?: string): Promise<any> {
+    console.log(search, 'adadaa');
     return this.usersService.findAll(search);
   }
 
@@ -39,6 +40,7 @@ export class UsersController {
    * @param {number} id - user id
    * @returns {Promise<User>}
    */
+  @ApiParam({ name: 'id' })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<any> {
     return this.usersService.findOne(id);

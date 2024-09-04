@@ -1,13 +1,18 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Request } from 'express';
-import { DatabaseService } from '../database/database.service';
 import { ResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
 import { globalConstant } from '../constant';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/users/users.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class HelperService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
   /**
    * Retrieves a user from the database based on the provided token.
@@ -17,7 +22,17 @@ export class HelperService {
    */
   async getUserFromToken(req: Request) {
     const payload = JSON.parse(JSON.stringify(req.user));
-    const user = await this.databaseService.user.findUnique({
+    // const user = await this.databaseService.user.findUnique({
+    //   where: {
+    //     id: payload.user_id,
+    //   },
+    //   select: {
+    //     id: true,
+    //     name: true,
+    //     email: true,
+    //   },
+    // });
+    const user = await this.userRepository.findOne({
       where: {
         id: payload.user_id,
       },

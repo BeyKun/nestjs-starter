@@ -12,6 +12,7 @@ import {
 } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
 import { NotFoundError } from 'rxjs';
+import { EntityNotFoundError } from 'typeorm';
 
 type MyResponseObj = {
   statusCode: number;
@@ -50,6 +51,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         myResponseObj.statusCode = 404;
       }
       myResponseObj.response = exception.message.replaceAll(/\n/g, '');
+    } else if (exception instanceof EntityNotFoundError) {
+      myResponseObj.statusCode = 404;
+      myResponseObj.response = 'Entity Not Found';
     } else {
       myResponseObj.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
       myResponseObj.response = 'Internal Server Error';
